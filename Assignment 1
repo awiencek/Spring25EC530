@@ -1,0 +1,30 @@
+import math
+from math, import sin, cos, arccos
+
+#Mission of the module:  If the user gives you two arrays of geo location, match each point in the first array to the closest one in the second array
+
+#How to calculate the distance between two GPS locations
+#latitude, longitude   (degrees, minutes, seconds)
+#Haversine formula (for distance in km)
+#D = 6378*arccos[sin(latA)*sin(latB)+cos(latA)*cos(latB)*cos(longA-longB)]
+
+#earth's radius is 6378 km
+
+#function definition: two array inputs, return float output
+#array inputs should be structured as follows:
+#northern latitudes should be written as positive values, southern as negative values
+#eastern longitudes should be written as positive values, western as negative values
+
+def gps_distance(place1, place2):
+  float distance
+  
+  #convert degrees to radians
+  latA = math.radians(place1[0])
+  latB = math.radians(place2[0])
+  longA = math.radians(place1[1])
+  longB = math.radians(place2[1])
+  
+  #calculation for distance
+  distance = 6378*arccos[sin(latA)*sin(latB)+cos(latA)*cos(latB)*cos(longA-longB)]
+  
+  return distance
