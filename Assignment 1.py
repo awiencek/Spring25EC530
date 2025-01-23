@@ -1,3 +1,7 @@
+#please go to https://github.com/awiencek/Spring25EC530/blob/main/Assignment%201/assignment1.py to see updated/better tested code for this assignment and its readme file
+
+
+
 import math
 from math import sin, cos, acos
 
