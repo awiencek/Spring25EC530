@@ -17,3 +17,4 @@ Make sure you design the data structures, errors and information back.
 
 ---planning notes---
 seperate JSON files for the entities
+try optimmizing with pointers
