@@ -1,1 +1,19 @@
 info on the intent/focus of the assignment
+
+Design APIs for all entities we discussed in class:
+User
+House
+Rooms
+Devices
+
+Develop Stub builds for the APIs
+
+Develop unit tests for the stub functions
+
+Utilize GitHub actions and automate the cycle
+
+Make sure you design the data structures, errors and information back.
+
+
+---planning notes---
+seperate JSON files for the entities
