@@ -18,3 +18,10 @@ Make sure you design the data structures, errors and information back.
 ---planning notes---
 seperate JSON files for the entities -> export into readable/nested structure
 try optimmizing with pointers
+put them all together, add in error messages
+
+make the stubs
+
+make a few test files
+
+actions/automation
