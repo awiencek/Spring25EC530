@@ -1,5 +1,12 @@
-info on the intent/focus of the assignment
+A basic API design intended to assist in smart home planning in order to synch and manage multiple devices. Major focus has been placed on CRUD (create, read, update, delete) functions of the following entities: users, houses, rooms, devices. The management of each entity is handled in its own python file. Stub builds are included as JSON files. Github actions for testing have been listed below. Generative ai was used in the development of this exercise.
 
+
+
+
+
+
+
+---------------------------------------
 Design APIs for all entities we discussed in class:
 User
 House
