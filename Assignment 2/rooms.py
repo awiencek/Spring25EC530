@@ -1,3 +1,4 @@
+import json
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, validator
 from typing import List, Optional
@@ -38,6 +39,13 @@ class RoomResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+# Load the stub data
+with open("rooms_stub.json") as f:
+    data = json.load(f)
+    # Populate fake_db with room data
+    for room in data["rooms"]:
+        fake_db[room["room_id"]] = room
 
 # CRUD Operations
 
