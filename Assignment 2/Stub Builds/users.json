@@ -1,0 +1,38 @@
+[
+  {
+    "user_id": 1,
+    "name": "Alice Johnson",
+    "role": "admin",
+    "email": "alice.johnson@example.com"
+  },
+  {
+    "user_id": 2,
+    "name": "Bob Smith",
+    "role": "manager",
+    "email": "bob.smith@example.com"
+  },
+  {
+    "user_id": 3,
+    "name": "Charlie Brown",
+    "role": "guest",
+    "email": "charlie.brown@example.com"
+  },
+  {
+    "user_id": 4,
+    "name": "Diana Ross",
+    "role": "admin",
+    "email": "diana.ross@example.com"
+  },
+  {
+    "user_id": 5,
+    "name": "Eve White",
+    "role": "manager",
+    "email": "eve.white@example.com"
+  },
+  {
+    "user_id": 6,
+    "name": "Frank Black",
+    "role": "guest",
+    "email": "frank.black@example.com"
+  }
+]
