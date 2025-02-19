@@ -40,6 +40,13 @@ class deviceResponse(BaseModel):
     class Config:
         orm_mode = True
 
+# Load the stub devices from the JSON file
+with open("devices_stub.json") as f:
+    devices_data = json.load(f)
+
+# Initialize fake_db with stub devices
+fake_db = {device['device_id']: device for device in devices_data['devices']}
+
 # CRUD Operations
 
 # Create a new device
