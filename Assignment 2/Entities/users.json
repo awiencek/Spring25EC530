@@ -4,8 +4,13 @@
       "user_id": 1,
       "name": "John Doe",
       "role": "admin",
-      "house_id": 101,
-      "email": "johndoe@example.com"
+      "house_id": 101
+    },
+    {
+      "user_id": 2,
+      "name": "Jane Doe",
+      "role": "family",
+      "house_id": 101
     }
   ]
 }
