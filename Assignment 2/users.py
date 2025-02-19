@@ -80,3 +80,13 @@ async def delete_user(user_id: int):
 @app.exception_handler(ValueError)
 async def validation_exception_handler(request, exc: ValueError):
     return HTTPException(status_code=400, detail=str(exc))
+
+import json
+
+# Load the stub users from the JSON file
+with open("users_stub.json") as f:
+    users_data = json.load(f)
+
+# In-memory storage (in place of a database)
+fake_db = {user['user_id']: user for user in users_data}
+
