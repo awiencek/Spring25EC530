@@ -1,0 +1,66 @@
+{
+  "houses": [
+    {
+      "house_id": 1,
+      "name": "Sunny Villa",
+      "address": {
+        "street": "123 Sunflower Rd",
+        "city": "Springfield",
+        "country": "USA",
+        "zip_code": "12345"
+      }
+    },
+    {
+      "house_id": 2,
+      "name": "Mountain Lodge",
+      "address": {
+        "street": "456 Mountain View Dr",
+        "city": "Hilltop",
+        "country": "USA",
+        "zip_code": "67890"
+      }
+    },
+    {
+      "house_id": 3,
+      "name": "City Heights",
+      "address": {
+        "street": "789 Urban Blvd",
+        "city": "Metropolis",
+        "country": "USA",
+        "zip_code": "11223"
+      }
+    }
+  ],
+  "users": [
+    {
+      "user_id": 1,
+      "name": "Alice Johnson",
+      "address": {
+        "street": "123 Sunflower Rd",
+        "city": "Springfield",
+        "country": "USA",
+        "zip_code": "12345"
+      }
+    },
+    {
+      "user_id": 2,
+      "name": "Bob Smith",
+      "address": {
+        "street": "456 Mountain View Dr",
+        "city": "Hilltop",
+        "country": "USA",
+        "zip_code": "67890"
+      }
+    },
+    {
+      "user_id": 3,
+      "name": "Charlie Brown",
+      "address": {
+        "street": "789 Urban Blvd",
+        "city": "Metropolis",
+        "country": "USA",
+        "zip_code": "11223"
+      }
+    }
+  ]
+}
