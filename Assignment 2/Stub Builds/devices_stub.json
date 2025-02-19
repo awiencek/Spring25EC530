@@ -1,0 +1,39 @@
+{
+  "devices": [
+    {
+      "device_id": 1,
+      "name": "Smart Thermostat",
+      "type": "thermostat",
+      "brand": "Nest",
+      "status": "active"
+    },
+    {
+      "device_id": 2,
+      "name": "Smart Light Bulb",
+      "type": "light",
+      "brand": "Philips",
+      "status": "inactive"
+    },
+    {
+      "device_id": 3,
+      "name": "Smart Door Lock",
+      "type": "lock",
+      "brand": "August",
+      "status": "active"
+    },
+    {
+      "device_id": 4,
+      "name": "Security Camera",
+      "type": "camera",
+      "brand": "Arlo",
+      "status": "inactive"
+    },
+    {
+      "device_id": 5,
+      "name": "Smart Plug",
+      "type": "plug",
+      "brand": "TP-Link",
+      "status": "active"
+    }
+  ]
+}
