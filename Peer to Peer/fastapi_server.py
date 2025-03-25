@@ -51,22 +51,32 @@ async def send_message(msg: Message):
         return {"error": "Database connection failed"}
 
 @app.get("/get_messages", response_model=List[Message])
-async def get_messages():
+async def get_messages(recipient_ip: str):
     """API endpoint to get all messages."""
     connection = get_db_connection()
     if connection:
         cursor = connection.cursor(dictionary=True)
         
-        # Retrieve all messages from the database
-        query = "SELECT sender_ip AS sender, message FROM messages WHERE status = 'delivered'"
-        cursor.execute(query)
-        
-        # Fetch messages and convert to Pydantic model format
+        # Fetch all messages that were sent to the recipient and are marked as 'sent' (offline messages)
+        query = "SELECT sender_ip AS sender, message FROM messages WHERE recipient_ip = %s AND status = 'sent'"
+        cursor.execute(query, (recipient_ip,))
+
+        # Fetch messages from the database
         rows = cursor.fetchall()
+
+        # Convert rows to Message Pydantic models
         messages = [Message(sender=row['sender'], message=row['message']) for row in rows]
+
+        # Mark all fetched messages as 'delivered'
+        cursor.execute(
+            "UPDATE messages SET status = 'delivered' WHERE recipient_ip = %s AND status = 'sent'", 
+            (recipient_ip,)
+        )
+        connection.commit()
 
         cursor.close()
         connection.close()
+
         return messages
     else:
         return {"error": "Database connection failed"}
