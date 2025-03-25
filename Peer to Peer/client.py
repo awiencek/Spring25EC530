@@ -18,6 +18,25 @@ def start_client(server_ip, server_port):
     # Connect to the server
     client_socket.connect((server_ip, server_port))
     print(f"Connected to server at {server_ip}:{server_port}")
+
+    # Retrieve unread messages for the client
+    db_cursor.execute(
+        "SELECT message, timestamp FROM messages WHERE recipient_ip = %s AND status = 'sent'",
+        ('client_ip_here',)
+    )
+    unread_messages = db_cursor.fetchall()
+
+    # Display unread messages
+    for msg, timestamp in unread_messages:
+        print(f"Unread message: {msg} (sent at {timestamp})")
+    
+    # Mark them as 'delivered'
+    db_cursor.execute(
+        "UPDATE messages SET status = 'delivered' WHERE recipient_ip = %s AND status = 'sent'",
+        ('client_ip_here',)
+    )
+    db_connection.commit()
+
     
     try:
         while True:
