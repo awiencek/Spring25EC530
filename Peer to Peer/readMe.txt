@@ -14,5 +14,6 @@ Add unit tests for each step:
 
 
 Note to self: make a larger readme on the main page of this repo for each smaller project
+Self note 2: redefine client and server files/code to be node 1 and node 2 (and make it modular so you can add more nodes)
 
 ChatGPT used as copilot/resource for this project
