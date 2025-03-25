@@ -14,3 +14,5 @@ Add unit tests for each step:
 
 
 Note to self: make a larger readme on the main page of this repo for each smaller project
+
+ChatGPT used as copilot/resource for this project
