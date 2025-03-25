@@ -4,7 +4,7 @@ Phase 1:  Basic Peer-to-Peer Chat System
   client.py and server.py
 Phase 2:  API-based Messaging System
   fastapi_client.py and fastapi_server.py
-Phase 3:  Special Messages for Subscribers
+Phase 3:  Special Messages (links/embeds) for Subscribers (nodes/devices)
   to do
 Phase 4:  Security & Enhancements
   to do
