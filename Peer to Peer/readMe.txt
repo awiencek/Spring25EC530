@@ -9,5 +9,8 @@ Phase 3:  Special Messages for Subscribers
 Phase 4:  Security & Enhancements
   to do
 
+Add unit tests for each step:
+(list here)
+
 
 Note to self: make a larger readme on the main page of this repo for each smaller project
