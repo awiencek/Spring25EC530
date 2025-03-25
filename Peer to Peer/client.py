@@ -1,6 +1,17 @@
 import socket
+import mysql.connector
+from time import sleep
 
 def start_client(server_ip, server_port):
+    # Connect to MySQL Database
+    db_connection = mysql.connector.connect(
+        host="localhost",   # Your MySQL server
+        user="root",        # Your MySQL username
+        password="",        # Your MySQL password
+        database="messaging_db"
+    )
+    db_cursor = db_connection.cursor()
+
     # Create a socket object
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
@@ -13,6 +24,14 @@ def start_client(server_ip, server_port):
             # Send a message to the server
             message = input("You: ")
             client_socket.send(message.encode())
+            
+            # Save the message to the database as 'sent'
+            db_cursor.execute(
+                "INSERT INTO messages (sender_ip, recipient_ip, message) VALUES (%s, %s, %s)",
+                ('client_ip_here', server_ip, message)
+            )
+            db_connection.commit()
+
             if message.lower() == 'exit':
                 print("Connection closed.")
                 break
@@ -23,8 +42,18 @@ def start_client(server_ip, server_port):
             if response.lower() == 'exit':
                 print("Connection closed.")
                 break
+            
+            # Save the server's response to the database as 'delivered'
+            db_cursor.execute(
+                "INSERT INTO messages (sender_ip, recipient_ip, message, status) VALUES (%s, %s, %s, 'delivered')",
+                (server_ip, 'client_ip_here', response)
+            )
+            db_connection.commit()
+
     finally:
         client_socket.close()
+        db_cursor.close()
+        db_connection.close()
 
 if __name__ == "__main__":
     server_ip = "192.168.1.2"  # Replace with the server's IP address
