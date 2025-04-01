@@ -14,6 +14,11 @@ class SQLiteAssistantUI:
         # Database name
         self.db_name = 'example.db'
 
+        # Default colors (if no user input)
+        self.default_bg_color = '#f0f0f0'
+        self.default_button_color = '#4CAF50'
+        self.default_text_color = '#000000'
+
         # Create UI components
         self.create_widgets()
 
@@ -35,18 +40,79 @@ class SQLiteAssistantUI:
         self.generate_sql_button = tk.Button(self.root, text="Generate SQL via ChatGPT", command=self.generate_sql)
         self.generate_sql_button.grid(row=4, column=0, padx=10, pady=10)
 
+        # Add "Set Color Theme" button
+        self.set_theme_button = tk.Button(self.root, text="Set Color Theme", command=self.set_color_theme)
+        self.set_theme_button.grid(row=5, column=0, padx=10, pady=10)
+
         # Textbox for SQL Query input and results
         self.query_input_label = tk.Label(self.root, text="Enter SQL query:")
-        self.query_input_label.grid(row=5, column=0, padx=10, pady=5)
+        self.query_input_label.grid(row=6, column=0, padx=10, pady=5)
 
         self.query_input_text = tk.Text(self.root, height=4, width=50)
-        self.query_input_text.grid(row=6, column=0, padx=10, pady=5)
+        self.query_input_text.grid(row=7, column=0, padx=10, pady=5)
 
         self.result_label = tk.Label(self.root, text="Query Result:")
-        self.result_label.grid(row=7, column=0, padx=10, pady=5)
+        self.result_label.grid(row=8, column=0, padx=10, pady=5)
 
         self.result_text = tk.Text(self.root, height=10, width=50)
-        self.result_text.grid(row=8, column=0, padx=10, pady=10)
+        self.result_text.grid(row=9, column=0, padx=10, pady=10)
+
+    def set_color_theme(self):
+        """Allow the user to set a custom color theme using up to 3 hex codes."""
+        # Get user input for color codes (1 to 3)
+        color_input = simpledialog.askstring(
+            "Input", "Enter up to 3 hex color codes (e.g., #RRGGBB, #RRGGBB, #RRGGBB):"
+        )
+        if not color_input:
+            return
+
+        # Split the input and clean up the list
+        color_codes = [color.strip() for color in color_input.split(',') if color.strip()]
+        
+        # Validate that the user provided between 1 and 3 valid hex color codes
+        if len(color_codes) < 1 or len(color_codes) > 3:
+            messagebox.showerror("Invalid Input", "Please enter between 1 and 3 hex color codes.")
+            return
+        
+        # Check if each color code is valid
+        for color in color_codes:
+            if not color.startswith('#') or len(color) != 7 or not all(c in '0123456789ABCDEFabcdef' for c in color[1:]):
+                messagebox.showerror("Invalid Input", f"Invalid color code: {color}")
+                return
+
+        # Apply the colors to the UI
+        if len(color_codes) >= 1:
+            self.default_bg_color = color_codes[0]
+        if len(color_codes) >= 2:
+            self.default_button_color = color_codes[1]
+        if len(color_codes) >= 3:
+            self.default_text_color = color_codes[2]
+
+        # Update UI components with the new colors
+        self.apply_color_theme()
+
+        messagebox.showinfo("Success", "Color theme applied successfully!")
+
+    def apply_color_theme(self):
+        """Apply the current color theme to the UI."""
+        # Update the background color of the window
+        self.root.configure(bg=self.default_bg_color)
+
+        # Apply color changes to widgets
+        self.instructions_label.configure(bg=self.default_bg_color, fg=self.default_text_color)
+        self.query_input_label.configure(bg=self.default_bg_color, fg=self.default_text_color)
+        self.result_label.configure(bg=self.default_bg_color, fg=self.default_text_color)
+
+        # Buttons
+        self.load_csv_button.configure(bg=self.default_button_color, fg=self.default_text_color)
+        self.run_query_button.configure(bg=self.default_button_color, fg=self.default_text_color)
+        self.list_tables_button.configure(bg=self.default_button_color, fg=self.default_text_color)
+        self.generate_sql_button.configure(bg=self.default_button_color, fg=self.default_text_color)
+        self.set_theme_button.configure(bg=self.default_button_color, fg=self.default_text_color)
+
+        # Textboxes (input and result)
+        self.query_input_text.configure(bg=self.default_bg_color, fg=self.default_text_color)
+        self.result_text.configure(bg=self.default_bg_color, fg=self.default_text_color)
 
     def load_csv(self):
         """Load CSV file into SQLite database."""
