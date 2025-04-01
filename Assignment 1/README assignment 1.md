@@ -40,5 +40,5 @@ You need to provide two arrays, each containing the latitude and longitude of a 
 
 # Example
 place1 = [40.7128, -74.0060]  # New York City (latitude, longitude)
-place2 = [34.0522, -118.2437]  # Los Angeles (latitude, longitude)'''
+place2 = [34.0522, -118.2437]  # Los Angeles (latitude, longitude)
 
