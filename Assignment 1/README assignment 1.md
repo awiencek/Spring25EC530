@@ -18,17 +18,6 @@ Where:
 - Latitude and longitude are in degrees (converted to radians for calculation).
 - The Earth's radius is assumed to be 6378 km.
 
-## Input Format
-
-You need to provide two arrays, each containing the latitude and longitude of a location. The format for each array is as follows:
-
-```python
-[latitude, longitude]
-
-# Example
-place1 = [40.7128, -74.0060]  # New York City (latitude, longitude)
-place2 = [34.0522, -118.2437]  # Los Angeles (latitude, longitude)'''
-
 # Notes
 Ensure that the coordinates are correctly formatted and that the northern and eastern values are positive, while the southern and western values are negative.
 
@@ -41,3 +30,15 @@ math library (built-in)
 
 ## License
 This script is open-source and free to use and modify.
+
+## Input Format
+
+You need to provide two arrays, each containing the latitude and longitude of a location. The format for each array is as follows:
+
+```python
+[latitude, longitude]
+
+# Example
+place1 = [40.7128, -74.0060]  # New York City (latitude, longitude)
+place2 = [34.0522, -118.2437]  # Los Angeles (latitude, longitude)'''
+
