@@ -18,7 +18,7 @@ Where:
 - Latitude and longitude are in degrees (converted to radians for calculation).
 - The Earth's radius is assumed to be 6378 km.
 
-# Notes
+## Notes
 Ensure that the coordinates are correctly formatted and that the northern and eastern values are positive, while the southern and western values are negative.
 
 The script uses radians for trigonometric calculations, converting degrees to radians as needed.
