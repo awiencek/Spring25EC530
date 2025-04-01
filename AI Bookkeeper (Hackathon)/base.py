@@ -249,4 +249,3 @@ def interactive_assistant():
 if __name__ == '__main__':
     setup_logging()  # Initialize logging setup
     interactive_assistant()
-
