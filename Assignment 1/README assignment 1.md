@@ -27,7 +27,7 @@ You need to provide two arrays, each containing the latitude and longitude of a 
 
 # Example
 place1 = [40.7128, -74.0060]  # New York City (latitude, longitude)
-place2 = [34.0522, -118.2437]  # Los Angeles (latitude, longitude)
+place2 = [34.0522, -118.2437]  # Los Angeles (latitude, longitude)'''
 
 # Notes
 Ensure that the coordinates are correctly formatted and that the northern and eastern values are positive, while the southern and western values are negative.
