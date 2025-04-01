@@ -1,18 +1,30 @@
-import pandas as pd
 import sqlite3
+import pandas as pd
 import os
 import logging
 
-# Step 1: Load CSV and inspect data
+# Setup logging configuration
+def setup_logging():
+    """Set up the logging configuration."""
+    logging.basicConfig(filename='error_log.txt', level=logging.ERROR, 
+                        format='%(asctime)s - %(message)s')
+
+# Function to log errors
+def log_error(message):
+    """Log errors to a file (error_log.txt)."""
+    logging.error(message)
+
+# Function to load CSV into pandas DataFrame
 def load_csv(csv_file):
     """Load CSV into pandas DataFrame."""
     try:
         return pd.read_csv(csv_file)
     except Exception as e:
         log_error(f"Error loading CSV file {csv_file}: {str(e)}")
-        raise
+        print(f"Error loading CSV file {csv_file}: {str(e)}")
+        return None
 
-# Step 2: Map pandas data types to SQLite data types
+# Function to map pandas data types to SQLite data types
 def map_data_type(pandas_dtype):
     """Map pandas data type to SQLite data type."""
     if pandas_dtype == 'object':
@@ -24,11 +36,12 @@ def map_data_type(pandas_dtype):
     else:
         return 'TEXT'  # Default to TEXT for any other types
 
-# Step 3: Create table if it doesn't exist, otherwise handle schema conflict
+# Function to create table based on CSV schema
 def create_table_from_csv(csv_file, table_name, db_name):
     """Create or handle schema conflict when creating a table."""
-    # Load CSV into DataFrame
     df = load_csv(csv_file)
+    if df is None:
+        return
 
     # Connect to SQLite database
     conn = sqlite3.connect(db_name)
@@ -39,7 +52,6 @@ def create_table_from_csv(csv_file, table_name, db_name):
     existing_columns = cursor.fetchall()
 
     if existing_columns:
-        # Table exists, handle conflict
         print(f"Table '{table_name}' already exists.")
         action = prompt_user_for_conflict_resolution()
 
@@ -63,44 +75,67 @@ def create_table_from_csv(csv_file, table_name, db_name):
     # Build CREATE TABLE SQL statement
     columns = df.columns
     column_definitions = []
-    
     for column in columns:
         column_type = map_data_type(df[column].dtype)
         column_definition = f"{column} {column_type}"
         column_definitions.append(column_definition)
-    
+
     create_table_query = f"CREATE TABLE IF NOT EXISTS {table_name} (\n" + \
                          ",\n".join(column_definitions) + "\n);"
-    
-    # Execute the CREATE TABLE query
+
     try:
         cursor.execute(create_table_query)
         conn.commit()
         print(f"Table '{table_name}' created successfully in '{db_name}'.")
     except Exception as e:
         log_error(f"Error creating table '{table_name}': {str(e)}")
-        print(f"Error occurred while creating table '{table_name}'. Check error_log.txt.")
-    
+        print(f"Error creating table '{table_name}': {str(e)}")
+
+    # Insert the data into the table
+    insert_data_into_table(df, table_name, conn)
+
     conn.close()
 
-# Step 4: Insert Data into SQLite Table
-def insert_data_into_table(csv_file, table_name, db_name):
-    """Insert CSV data into the specified SQLite table."""
-    df = load_csv(csv_file)
-
-    # Connect to SQLite database
-    conn = sqlite3.connect(db_name)
-
+# Function to insert DataFrame data into SQLite table
+def insert_data_into_table(df, table_name, conn):
+    """Insert DataFrame data into SQLite table."""
     try:
-        # Insert the data from DataFrame to SQL table
         df.to_sql(table_name, conn, if_exists='append', index=False)
         conn.commit()
-        print(f"Data from '{csv_file}' inserted into '{table_name}'.")
+        print(f"Data from CSV inserted into table '{table_name}'.")
     except Exception as e:
         log_error(f"Error inserting data into table '{table_name}': {str(e)}")
-        print(f"Error occurred while inserting data. Check error_log.txt.")
-    finally:
+        print(f"Error inserting data into table '{table_name}': {str(e)}")
+
+# Function to run an arbitrary SQL query
+def run_sql_query(query, db_name):
+    """Execute a user-provided SQL query."""
+    try:
+        conn = sqlite3.connect(db_name)
+        cursor = conn.cursor()
+        cursor.execute(query)
+        result = cursor.fetchall()
         conn.close()
+        return result
+    except sqlite3.Error as e:
+        log_error(f"Error executing SQL query: {str(e)}")
+        print(f"Error executing SQL query: {str(e)}")
+        return None
+
+# Function to list all tables in the database
+def list_tables(db_name):
+    """List all tables in the database."""
+    try:
+        conn = sqlite3.connect(db_name)
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+        conn.close()
+        return [table[0] for table in tables]
+    except sqlite3.Error as e:
+        log_error(f"Error retrieving tables: {str(e)}")
+        print(f"Error retrieving tables: {str(e)}")
+        return []
 
 # Prompt the user for action on schema conflict
 def prompt_user_for_conflict_resolution():
@@ -112,25 +147,52 @@ def prompt_user_for_conflict_resolution():
         else:
             print("Invalid choice. Please choose 'overwrite', 'rename', or 'skip'.")
 
-# Error logging function
-def log_error(message):
-    """Log errors to a file (error_log.txt)."""
-    logging.basicConfig(filename='error_log.txt', level=logging.ERROR, 
-                        format='%(asctime)s - %(message)s')
-    logging.error(message)
-
-# Example Usage: Combine both steps
-def main():
-    csv_file = 'users.csv'
-    table_name = 'users'
+# Function for interactive chat-like assistant
+def interactive_assistant():
+    """Run the interactive chat-like assistant."""
     db_name = 'example.db'
 
-    # Step 1 & Step 2: Create or handle table creation based on CSV schema
-    create_table_from_csv(csv_file, table_name, db_name)
+    while True:
+        print("\nWelcome to the SQLite Assistant! What would you like to do?")
+        print("1. Load CSV file into SQLite")
+        print("2. Run SQL query")
+        print("3. List tables in the database")
+        print("4. Exit")
 
-    # Step 3: Insert the data into the table
-    insert_data_into_table(csv_file, table_name, db_name)
+        choice = input("Enter your choice (1, 2, 3, or 4): ").strip()
 
-# Run the combined process
+        if choice == '1':
+            csv_file = input("Enter the CSV file path to load: ").strip()
+            table_name = input("Enter the name of the table: ").strip()
+            create_table_from_csv(csv_file, table_name, db_name)
+
+        elif choice == '2':
+            query = input("Enter the SQL query to run: ").strip()
+            result = run_sql_query(query, db_name)
+            if result:
+                print("Query result:")
+                for row in result:
+                    print(row)
+            else:
+                print("No results found or error occurred.")
+
+        elif choice == '3':
+            tables = list_tables(db_name)
+            if tables:
+                print("Tables in the database:")
+                for table in tables:
+                    print(table)
+            else:
+                print("No tables found in the database.")
+
+        elif choice == '4':
+            print("Goodbye!")
+            break
+
+        else:
+            print("Invalid choice. Please enter 1, 2, 3, or 4.")
+
+# Run the interactive assistant
 if __name__ == '__main__':
-    main()
+    setup_logging()  # Initialize logging setup
+    interactive_assistant()
