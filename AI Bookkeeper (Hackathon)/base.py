@@ -2,6 +2,7 @@ import sqlite3
 import pandas as pd
 import os
 import logging
+import openai
 
 # Setup logging configuration
 def setup_logging():
@@ -137,7 +138,7 @@ def list_tables(db_name):
         print(f"Error retrieving tables: {str(e)}")
         return []
 
-# Prompt the user for action on schema conflict
+# Function to prompt the user for action on schema conflict
 def prompt_user_for_conflict_resolution():
     """Prompt the user to resolve schema conflict (overwrite, rename, skip)."""
     while True:
@@ -146,6 +147,33 @@ def prompt_user_for_conflict_resolution():
             return action
         else:
             print("Invalid choice. Please choose 'overwrite', 'rename', or 'skip'.")
+
+# Function to interact with OpenAI's GPT model to generate SQL from plain language
+def generate_sql_with_llm(request, table_schema):
+    """Generate SQL query using OpenAI's language model."""
+    openai.api_key = 'your-openai-api-key-here'  # Replace with your OpenAI API key
+
+    # Prepare the prompt for ChatGPT
+    prompt = f"Given the following table schema:\n{table_schema}\n\n" \
+             f"Generate an SQL query for the following request:\n{request}\n\n" \
+             f"SQL Query:"
+
+    try:
+        # Call OpenAI API to get the generated SQL
+        response = openai.Completion.create(
+            engine="gpt-4",  # Or use any model you prefer, like 'gpt-3.5-turbo'
+            prompt=prompt,
+            max_tokens=150,
+            n=1,
+            stop=None,
+            temperature=0.5
+        )
+        generated_sql = response.choices[0].text.strip()
+        return generated_sql
+    except Exception as e:
+        log_error(f"Error with OpenAI API: {str(e)}")
+        print(f"Error with OpenAI API: {str(e)}")
+        return None
 
 # Function for interactive chat-like assistant
 def interactive_assistant():
@@ -157,9 +185,10 @@ def interactive_assistant():
         print("1. Load CSV file into SQLite")
         print("2. Run SQL query")
         print("3. List tables in the database")
-        print("4. Exit")
+        print("4. Generate SQL via ChatGPT")
+        print("5. Exit")
 
-        choice = input("Enter your choice (1, 2, 3, or 4): ").strip()
+        choice = input("Enter your choice (1, 2, 3, 4, or 5): ").strip()
 
         if choice == '1':
             csv_file = input("Enter the CSV file path to load: ").strip()
@@ -186,13 +215,38 @@ def interactive_assistant():
                 print("No tables found in the database.")
 
         elif choice == '4':
+            request = input("Enter your request in plain language (e.g., 'Show me all records where price > 100'): ").strip()
+            tables = list_tables(db_name)
+            if tables:
+                # Assuming we pick the first table from the list to build the schema
+                table_name = tables[0]  # You could prompt the user for the table if necessary
+                df = pd.read_sql_query(f"SELECT * FROM {table_name} LIMIT 1", sqlite3.connect(db_name))
+                table_schema = df.columns.tolist()
+                table_schema_str = ', '.join([f"{col} (type: {map_data_type(df[col].dtype)})" for col in table_schema])
+
+                # Call the LLM to generate SQL based on the plain language request
+                generated_sql = generate_sql_with_llm(request, table_schema_str)
+                if generated_sql:
+                    print(f"Generated SQL Query: {generated_sql}")
+                    result = run_sql_query(generated_sql, db_name)
+                    if result:
+                        print("Query result:")
+                        for row in result:
+                            print(row)
+                    else:
+                        print("No results found or error occurred.")
+                else:
+                    print("Failed to generate SQL query.")
+
+        elif choice == '5':
             print("Goodbye!")
             break
 
         else:
-            print("Invalid choice. Please enter 1, 2, 3, or 4.")
+            print("Invalid choice. Please enter 1, 2, 3, 4, or 5.")
 
 # Run the interactive assistant
 if __name__ == '__main__':
     setup_logging()  # Initialize logging setup
     interactive_assistant()
+
