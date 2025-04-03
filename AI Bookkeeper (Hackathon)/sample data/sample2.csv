@@ -1,0 +1,11 @@
+employee_id,first_name,last_name,position,salary,date_hired
+1001,John,Doe,Software Engineer,95000,2020-06-15
+1002,Jane,Smith,Product Manager,105000,2019-03-12
+1003,Michael,Brown,Marketing Specialist,75000,2021-01-09
+1004,Emily,Jones,HR Manager,88000,2018-11-30
+1005,David,Williams,Graphic Designer,65000,2022-08-21
+1006,Sarah,Johnson,Data Analyst,80000,2017-05-14
+1007,James,Miller,Sales Executive,70000,2020-02-22
+1008,Linda,Garcia,Financial Analyst,95000,2019-09-17
+1009,Robert,Martinez,Customer Support,48000,2023-01-07
+1010,William,Lee,Software Engineer,98000,2021-07-03
