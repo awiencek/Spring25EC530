@@ -28,15 +28,18 @@ pip install sqlite3 pandas openai tk
 
 - It also supports generating SQL queries based on plain language input using OpenAI's language models.
 
+
 2. AI-Powered SQL Generation
 - OpenAI powers the ability to generate SQL queries using plain language.
 
 - The user can input natural language requests, such as "Show all records where price > 100," and the AI will generate the corresponding SQL query.
 
+
 3. Graphical User Interface (GUI)
 - Built with Tkinter, the UI offers buttons for various actions like loading CSV files, running SQL queries, and generating SQL via ChatGPT.
 
 - The UI also allows users to customize the color theme for a personalized experience.
+
 
 4. Unit Testing
 - Unit tests have been written to ensure the core functionality of the SQLite Assistant (e.g., creating tables from CSV, running SQL queries, generating SQL with AI).
@@ -45,14 +48,18 @@ pip install sqlite3 pandas openai tk
 Step 1: Load CSV Files into SQLite
 The user can select a CSV file, which is then loaded into SQLite. The application automatically creates a table based on the CSV schema.
 
+
 Step 2: Create Tables Dynamically from CSV
 When a CSV is loaded, a table is created dynamically in the SQLite database using the column names and data types from the CSV.
+
 
 Step 3: Handle Schema Conflicts
 If a table already exists with the same name, the user is prompted to either overwrite, rename, or skip creating the new table.
 
+
 Step 4: Simulate AI using Input
 The application simulates AI using the schema of a selected table. This schema is provided as input to OpenAI's API to generate SQL queries.
+
 
 Step 5: Generate SQL via ChatGPT
 The AI listens to natural language queries, converts them into SQL statements, and automatically executes them to retrieve results.
