@@ -1,34 +1,208 @@
-A basic API design intended to assist in smart home planning in order to synch and manage multiple devices. Major focus has been placed on CRUD (create, read, update, delete) functions of the following entities: users, houses, rooms, devices. The management of each entity is handled in its own python file. Stub builds are included as JSON files. Github actions for testing have been listed below. Generative ai was used in the development of this exercise.
+# Smart Home API
+
+## Overview
+
+The Smart Home API is a basic API design intended to assist in smart home planning. It allows users to manage and synchronize multiple devices across various homes, rooms, and users. The API is built with FastAPI and focuses on CRUD (Create, Read, Update, Delete) operations for the following entities:
+
+- **Users**
+- **Houses**
+- **Rooms**
+- **Devices**
+
+Each of these entities is managed by its own Python file, and data is stored in-memory using dictionaries (acting as a mock database). Stub data is provided in separate JSON files for initial testing.
+
+The API design also includes error handling, validation, and data integrity checks. GitHub Actions are configured to automate testing, ensuring a streamlined development and deployment cycle.
+
+---
+
+## Features
+
+- **CRUD Operations** for Users, Houses, Rooms, and Devices
+- Data validation using Pydantic models
+- Custom error handling for invalid inputs
+- In-memory storage (fake database) for development purposes
+- Stub data for initial testing
+- GitHub Actions for continuous integration and testing automation
+
+---
+
+## Project Structure
+
+The project is organized as follows:
+├── devices.py # Manages device entities and operations ├── houses.py # Manages house entities and operations ├── rooms.py # Manages room entities and operations ├── users.py # Manages user entities and operations ├── devices_stub.json # Stub data for devices ├── houses_users_stub.json # Stub data for houses and users ├── rooms_stub.json # Stub data for rooms ├── users_stub.json # Stub data for users ├── requirements.txt # Project dependencies └── .github/ └── workflows/ └── ci.yml # GitHub Actions CI configuration
 
 
+### Description of Python Files:
 
+- **devices.py**: Handles CRUD operations for devices such as thermostats, humidity sensors, smart lights, etc.
+- **houses.py**: Manages CRUD operations for houses, including optional addresses.
+- **rooms.py**: Handles CRUD operations for rooms in a house, including different types of rooms like living rooms, kitchens, and offices.
+- **users.py**: Manages CRUD operations for users, their roles, and associated information.
 
+### Stub JSON Files:
 
+- **devices_stub.json**: Contains initial mock data for devices (thermometers, smart lights, etc.).
+- **houses_users_stub.json**: Contains mock data for houses and users (addresses, user roles, etc.).
+- **rooms_stub.json**: Contains mock data for rooms (living rooms, kitchens, etc.).
+- **users_stub.json**: Contains mock data for users (IDs, names, roles).
 
+---
 
----------------------------------------
-Design APIs for all entities we discussed in class:
-User
-House
-Rooms
-Devices
+## Installation
 
-Develop Stub builds for the APIs
+To get started with this project, follow these steps:
 
-Develop unit tests for the stub functions
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/your-username/smart-home-api.git
+    cd smart-home-api
+    ```
 
-Utilize GitHub actions and automate the cycle
+2. Create a virtual environment (recommended):
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    ```
 
-Make sure you design the data structures, errors and information back.
+3. Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
+4. Run the FastAPI server:
+    ```bash
+    uvicorn devices:app --reload
+    ```
 
----planning notes---
-seperate JSON files for the entities -> export into readable/nested structure
-try optimmizing with pointers
-put them all together, add in error messages
+    The API will be available at `http://127.0.0.1:8000`.
 
-make the stubs
+---
 
-make a few test files
+## API Endpoints
 
-actions/automation
+### Users
+
+- **Create User**
+    - `POST /users/`
+    - Request body: User data (user_id, name, role, email)
+    - Response: Created user object
+
+- **Get User by ID**
+    - `GET /users/{user_id}`
+    - Response: User data
+
+- **Get All Users**
+    - `GET /users/`
+    - Response: List of all users
+
+- **Update User**
+    - `PUT /users/{user_id}`
+    - Request body: Updated user data
+    - Response: Updated user object
+
+- **Delete User**
+    - `DELETE /users/{user_id}`
+    - Response: Success message
+
+---
+
+### Houses
+
+- **Create House**
+    - `POST /houses/`
+    - Request body: House data (house_id, name, address)
+    - Response: Created house object
+
+- **Get House by ID**
+    - `GET /houses/{house_id}`
+    - Response: House data
+
+- **Get All Houses**
+    - `GET /houses/`
+    - Response: List of all houses
+
+---
+
+### Rooms
+
+- **Create Room**
+    - `POST /rooms/`
+    - Request body: Room data (room_id, name, room_type, area)
+    - Response: Created room object
+
+- **Get Room by ID**
+    - `GET /rooms/{room_id}`
+    - Response: Room data
+
+- **Get All Rooms**
+    - `GET /rooms/`
+    - Response: List of all rooms
+
+- **Update Room**
+    - `PUT /rooms/{room_id}`
+    - Request body: Updated room data
+    - Response: Updated room object
+
+- **Delete Room**
+    - `DELETE /rooms/{room_id}`
+    - Response: Success message
+
+---
+
+### Devices
+
+- **Create Device**
+    - `POST /devices/`
+    - Request body: Device data (device_id, name, device_type, area)
+    - Response: Created device object
+
+- **Get Device by ID**
+    - `GET /devices/{device_id}`
+    - Response: Device data
+
+- **Get All Devices**
+    - `GET /devices/`
+    - Response: List of all devices
+
+- **Update Device**
+    - `PUT /devices/{device_id}`
+    - Request body: Updated device data
+    - Response: Updated device object
+
+- **Delete Device**
+    - `DELETE /devices/{device_id}`
+    - Response: Success message
+
+---
+
+## Testing
+
+Unit tests are designed to verify the functionality of the CRUD operations. To run the tests, you can use the following command:
+
+```bash
+pytest
+
+The tests are set up with GitHub Actions for continuous integration. You can find the configuration for CI in the .github/workflows/ci.yml file.
+
+GitHub Actions
+GitHub Actions are configured to automate the testing and build process. Upon every push or pull request to the repository, tests are executed to ensure that the application functions as expected. The CI pipeline is defined in the .github/workflows/ci.yml file.
+
+Error Handling
+The API includes custom error handling for invalid inputs, ensuring that users receive appropriate feedback when their requests fail. For example:
+
+Invalid device type
+
+Missing required fields (e.g., user ID, house ID)
+
+Unavailable resource (e.g., non-existent user or house)
+
+Future Improvements
+Database Integration: Replace the in-memory storage with a real database (e.g., PostgreSQL or MongoDB).
+
+Authentication: Add authentication and authorization for better security, especially for managing users and devices.
+
+Advanced Validation: Improve validation logic with more sophisticated checks (e.g., for email format, user roles).
+
+Acknowledgements
+This project was developed as part of a Smart Home API design exercise. Generative AI tools were utilized in the development process to optimize and automate certain parts of the code.
+
