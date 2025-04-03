@@ -120,5 +120,78 @@ class TestSQLiteAssistant(unittest.TestCase):
         mock_conn.commit.assert_called_once()
         self.assertTrue(mock_conn.cursor().call_count > 0)
 
+    @patch('sqlite3.connect')
+    def test_insert_large_csv_in_chunks(self, mock_connect):
+        """Test inserting large CSV data in chunks."""
+        mock_conn = MagicMock()
+        mock_connect.return_value = mock_conn
+        table_name = 'test_table'
+        db_name = 'test.db'
+
+        # Mocking large CSV data
+        large_csv_data = pd.DataFrame({
+            'id': [1, 2, 3, 4],
+            'name': ['Alice', 'Bob', 'Charlie', 'David']
+        })
+        
+        # Mock load_csv_in_chunks to return a chunked CSV
+        with patch.object(sqlite_assistant, 'load_csv_in_chunks', return_value=[large_csv_data.iloc[:2], large_csv_data.iloc[2:]]):
+            sqlite_assistant.insert_large_csv_in_chunks('large_test.csv', table_name, mock_conn, chunk_size=2)
+        
+        # Check if chunks were inserted one by one
+        mock_conn.cursor().execute.assert_any_call('BEGIN')
+        mock_conn.commit.assert_called()
+
+    @patch('sqlite3.connect')
+    @patch('builtins.input', return_value='overwrite')  # Mock user input for conflict resolution
+    def test_create_table_from_csv_with_conflict_resolution(self, mock_input, mock_connect):
+        """Test handling schema conflict resolution when table exists."""
+        mock_conn = MagicMock()
+        mock_connect.return_value = mock_conn
+        table_name = 'test_table'
+        db_name = 'test.db'
+        
+        # Mocking the CSV data
+        csv_data = pd.DataFrame({
+            'id': [1, 2],
+            'name': ['Alice', 'Bob']
+        })
+        
+        # Mock load_csv to return our mock DataFrame
+        with patch.object(sqlite_assistant, 'load_csv', return_value=csv_data):
+            # Mock existing table and user input
+            mock_conn.cursor().fetchall.return_value = [('id', 'name')]
+            sqlite_assistant.create_table_from_csv('test.csv', table_name, db_name)
+        
+        # Verify that the table was dropped and recreated
+        mock_conn.cursor().execute.assert_any_call(f"DROP TABLE IF EXISTS {table_name};")
+        mock_conn.commit.assert_called()
+
+    @patch('sqlite3.connect')
+    @patch('builtins.input', return_value='rename')  # Mock renaming table
+    def test_create_table_from_csv_with_rename(self, mock_input, mock_connect):
+        """Test renaming the table when conflict occurs."""
+        mock_conn = MagicMock()
+        mock_connect.return_value = mock_conn
+        table_name = 'test_table'
+        db_name = 'test.db'
+        
+        # Mocking the CSV data
+        csv_data = pd.DataFrame({
+            'id': [1, 2],
+            'name': ['Alice', 'Bob']
+        })
+        
+        # Mock load_csv to return our mock DataFrame
+        with patch.object(sqlite_assistant, 'load_csv', return_value=csv_data):
+            # Mock existing table and user input
+            mock_conn.cursor().fetchall.return_value = [('id', 'name')]
+            sqlite_assistant.create_table_from_csv('test.csv', table_name, db_name)
+        
+        # Check if the table name was modified
+        new_table_name = f"{table_name}_{str(uuid.uuid4())[:8]}"
+        self.assertIn(new_table_name, mock_conn.cursor().execute.call_args[0][0])
+
 if __name__ == '__main__':
     unittest.main()
+
