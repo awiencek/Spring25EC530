@@ -1,0 +1,11 @@
+order_id,customer_id,order_date,total_amount,products
+1001,501,2025-04-01,250.75,"Laptop, Mouse, Keyboard"
+1002,502,2025-04-02,79.99,"Headphones, USB Cable"
+1003,503,2025-04-02,215.50,"Smartphone, Phone Case"
+1004,504,2025-04-03,99.20,"Monitor, HDMI Cable"
+1005,505,2025-04-03,150.00,"Bluetooth Speaker, Charging Dock"
+1006,506,2025-04-04,349.99,"Tablet, Stylus Pen"
+1007,507,2025-04-05,120.45,"Wireless Mouse, Laptop Stand"
+1008,508,2025-04-06,85.99,"Smartwatch, Screen Protector"
+1009,509,2025-04-07,55.30,"Phone Charger, Earbuds"
+1010,510,2025-04-07,490.00,"Desktop Computer, Keyboard, Mouse"
