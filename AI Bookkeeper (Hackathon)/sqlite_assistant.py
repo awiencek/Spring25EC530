@@ -3,17 +3,23 @@ import pandas as pd
 import os
 import logging
 import openai
+import uuid
 
 # Setup logging configuration
 def setup_logging():
     """Set up the logging configuration."""
-    logging.basicConfig(filename='error_log.txt', level=logging.ERROR, 
+    logging.basicConfig(filename='error_log.txt', level=logging.INFO, 
                         format='%(asctime)s - %(message)s')
 
 # Function to log errors
 def log_error(message):
     """Log errors to a file (error_log.txt)."""
     logging.error(message)
+
+# Function to log informational messages
+def log_info(message):
+    """Log informational messages."""
+    logging.info(message)
 
 # Function to load CSV into pandas DataFrame
 def load_csv(csv_file):
@@ -24,6 +30,21 @@ def load_csv(csv_file):
         log_error(f"Error loading CSV file {csv_file}: {str(e)}")
         print(f"Error loading CSV file {csv_file}: {str(e)}")
         return None
+
+def load_csv_in_chunks(csv_file, chunk_size=1000):
+    """Load CSV in chunks to handle large files."""
+    chunks = []
+    for chunk in pd.read_csv(csv_file, chunksize=chunk_size):
+        chunks.append(chunk)
+    return chunks
+
+def insert_large_csv_in_chunks(csv_file, table_name, conn, chunk_size=1000):
+    """Insert data in chunks to handle large CSV files efficiently."""
+    chunks = load_csv_in_chunks(csv_file, chunk_size)
+    for chunk in chunks:
+        chunk.to_sql(table_name, conn, if_exists='append', index=False)
+        conn.commit()
+        print(f"Inserted chunk of {len(chunk)} records into {table_name}.")
 
 # Function to map pandas data types to SQLite data types
 def map_data_type(pandas_dtype):
@@ -61,7 +82,7 @@ def create_table_from_csv(csv_file, table_name, db_name):
             conn.commit()
             print(f"Table '{table_name}' has been dropped and will be recreated.")
         elif action == 'rename':
-            new_table_name = f"{table_name}_1"  # You can add a more complex renaming logic
+            new_table_name = f"{table_name}_{str(uuid.uuid4())[:8]}"  # Unique identifier for table rename
             print(f"Renaming table to '{new_table_name}'.")
             table_name = new_table_name
         elif action == 'skip':
@@ -87,6 +108,7 @@ def create_table_from_csv(csv_file, table_name, db_name):
     try:
         cursor.execute(create_table_query)
         conn.commit()
+        log_info(f"Table '{table_name}' created successfully in '{db_name}'.")
         print(f"Table '{table_name}' created successfully in '{db_name}'.")
     except Exception as e:
         log_error(f"Error creating table '{table_name}': {str(e)}")
@@ -103,6 +125,7 @@ def insert_data_into_table(df, table_name, conn):
     try:
         df.to_sql(table_name, conn, if_exists='append', index=False)
         conn.commit()
+        log_info(f"Data from CSV inserted into table '{table_name}'.")
         print(f"Data from CSV inserted into table '{table_name}'.")
     except Exception as e:
         log_error(f"Error inserting data into table '{table_name}': {str(e)}")
@@ -115,6 +138,21 @@ def run_sql_query(query, db_name):
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
         cursor.execute(query)
+        result = cursor.fetchall()
+        conn.close()
+        return result
+    except sqlite3.Error as e:
+        log_error(f"Error executing SQL query: {str(e)}")
+        print(f"Error executing SQL query: {str(e)}")
+        return None
+
+# Function to run a SQL query safely (preventing SQL injection)
+def run_sql_query_safe(query, params=None, db_name="example.db"):
+    """Execute SQL query safely with parameters to avoid SQL injection."""
+    try:
+        conn = sqlite3.connect(db_name)
+        cursor = conn.cursor()
+        cursor.execute(query, params or ())
         result = cursor.fetchall()
         conn.close()
         return result
@@ -143,20 +181,32 @@ def prompt_user_for_conflict_resolution():
     """Prompt the user to resolve schema conflict (overwrite, rename, skip)."""
     while True:
         action = input("Table already exists. Choose an action: 'overwrite', 'rename', or 'skip': ").strip().lower()
-        if action in ['overwrite', 'rename', 'skip']:
+        if action == 'overwrite':
             return action
+        elif action == 'rename':
+            new_table_name = f"{table_name}_{str(uuid.uuid4())[:8]}"  # Adding a unique identifier to the table name
+            print(f"Renaming table to '{new_table_name}'.")
+            return new_table_name
+        elif action == 'skip':
+            print(f"Skipping table creation for '{table_name}'.")
+            return None
         else:
             print("Invalid choice. Please choose 'overwrite', 'rename', or 'skip'.")
 
 # Function to interact with OpenAI's GPT model to generate SQL from plain language
 def generate_sql_with_llm(request, table_schema):
     """Generate SQL query using OpenAI's language model."""
-    openai.api_key = 'your-openai-api-key-here'  # Replace with your OpenAI API key
+    openai.api_key = os.getenv('OPENAI_API_KEY')  # Load from environment variable
+
+    if not openai.api_key:
+        log_error("OpenAI API key is missing.")
+        print("Error: OpenAI API key is missing.")
+        return None
 
     # Prepare the prompt for ChatGPT
-    prompt = f"Given the following table schema:\n{table_schema}\n\n" \
-             f"Generate an SQL query for the following request:\n{request}\n\n" \
-             f"SQL Query:"
+    prompt = f"Here is the schema for the table(s):\n{table_schema}\n\n" \
+             f"Please generate an SQL query to fetch data based on the following request:\n" \
+             f"{request}\n\n"
 
     try:
         # Call OpenAI API to get the generated SQL
@@ -191,8 +241,8 @@ def interactive_assistant():
         choice = input("Enter your choice (1, 2, 3, 4, or 5): ").strip()
 
         if choice == '1':
-            csv_file = input("Enter the CSV file path to load: ").strip()
-            table_name = input("Enter the name of the table: ").strip()
+            csv_file = get_valid_file_path()
+            table_name = get_valid_table_name()
             create_table_from_csv(csv_file, table_name, db_name)
 
         elif choice == '2':
