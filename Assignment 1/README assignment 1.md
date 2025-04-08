@@ -28,6 +28,8 @@ Python 3.x
 
 math library (built-in)
 
+for additional details check requirements.txt
+
 ## License
 This script is open-source and free to use and modify.
 
@@ -41,4 +43,15 @@ You need to provide two arrays, each containing the latitude and longitude of a 
 # Example
 place1 = [40.7128, -74.0060]  # New York City (latitude, longitude)
 place2 = [34.0522, -118.2437]  # Los Angeles (latitude, longitude)
+```
 
+## Installation
+to install, run the following command in your terminal
+`
+pip install geo-distance
+`
+
+to run the tests, run this command in terminal
+`
+pytest tests/
+`
